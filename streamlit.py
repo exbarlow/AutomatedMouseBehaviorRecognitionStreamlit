@@ -19,6 +19,7 @@ uploaded_csvs = st.file_uploader("Upload CSV files",type=["csv"],accept_multiple
 uploaded_videos = st.file_uploader("Upload Video files",type=["mp4"],accept_multiple_files=True)
 
 video_names = set()
+fps = 10
 
 for uploaded_video in uploaded_videos:
     write_bytesio_to_file(uploaded_video.name,uploaded_video)
@@ -43,6 +44,8 @@ if len(uploaded_csvs) > 0:
         zip_name = "results"
         z = zipfile.ZipFile(f"{zip_name}.zip",mode="w")
 
+        matrix = []
+
         for uploaded_csv in uploaded_csvs:
             write_bytesio_to_file(uploaded_csv.name,uploaded_csv)
             z.write(uploaded_csv.name)
@@ -59,8 +62,12 @@ if len(uploaded_csvs) > 0:
                 periods = list(ob.values())[3:6]
                 means = list(ob.values())[6:9]
                 medians = list(ob.values())[9:12]
-        
-                ## TEMP
+
+                seconds = frames/fps
+                means_sec = means/fps
+                medians_sec = medians/fps
+                
+                matrix.append(seconds + periods + means_sec + medians_sec)
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
                 annotate_video(ob["frame_labels"],video_name,"")
 
@@ -80,7 +87,12 @@ if len(uploaded_csvs) > 0:
                 st.bar_chart(pd.DataFrame(data=median_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
                 st.bar_chart(pd.DataFrame(data=instance_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
 
-
+        columns=["s_grooming","s_rearing_mid","s_rearing_wall","periods_grooming","periods_rearing_mid","periods_rearing_wall","mean_s_grooming","mean_s_rearing_mid","mean_s_rearing_wall","median_s_grooming","median_s_rearing_mid","median_s_rearing_wall"]
+        summary_frame = pd.DataFrame(matrix,columns=columns,index=tab_names)
+        summary_frame.to_csv("summary.csv")
+        z.write("summary.csv")
+        z.close()
+        
         with open(f"{zip_name}.zip","rb") as fp:
             btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
     
