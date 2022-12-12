@@ -35,7 +35,7 @@ if len(uploaded_csvs) > 0:
 
     does_match = True
     for csv_name in tab_names:
-        corresponding_video_name = csv_name.split("_")[2][:-4] + ".mp4"
+        corresponding_video_name = csv_name.split("_")[2][:-4]
         st.write(corresponding_video_name)
         if corresponding_video_name not in video_names or len(uploaded_csvs) != len(uploaded_videos):
             st.write("Make sure that each video has a corresponding .csv file and vice-versa")
