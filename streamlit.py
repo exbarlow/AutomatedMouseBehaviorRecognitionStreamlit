@@ -31,7 +31,7 @@ if len(uploaded_csvs) > 0:
     tab_names = []
 
     for ind, uploaded_csv in enumerate(uploaded_csvs):
-        tab_names.append(uploaded_csv.name)
+        tab_names.append(uploaded_csv.name[:-4])
 
     does_match = True
     for csv_name in tab_names:
@@ -53,7 +53,7 @@ if len(uploaded_csvs) > 0:
             z.write(uploaded_csv.name)
         
         tabs = st.tabs(tab_names)
-            
+
         for index,tab in enumerate(tabs):
             with tab:
                 df = pd.read_csv(uploaded_csvs[index])
@@ -71,7 +71,7 @@ if len(uploaded_csvs) > 0:
                 num_periods = [len(x) for x in periods]
                 
                 matrix.append([tab_names[index]] + seconds + num_periods + means_sec + medians_sec)
-                video_name = uploaded_csvs[index].name.split("_")[2] + ".mp4"
+                video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
                 annotate_video(ob["frame_labels"],video_name,"")
 
                 z.write("out_"+video_name)
