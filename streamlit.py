@@ -66,8 +66,9 @@ if len(uploaded_csvs) > 0:
                 seconds = [x/fps for x in frames]
                 means_sec = [x/fps for x in means]
                 medians_sec = [x/fps for x in medians]
+                num_periods = [len(x) for x in periods]
                 
-                matrix.append(seconds + periods + means_sec + medians_sec)
+                matrix.append(seconds + num_periods + means_sec + medians_sec)
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
                 annotate_video(ob["frame_labels"],video_name,"")
 
@@ -88,7 +89,7 @@ if len(uploaded_csvs) > 0:
                 st.bar_chart(pd.DataFrame(data=instance_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
 
         columns=["s_grooming","s_rearing_mid","s_rearing_wall","periods_grooming","periods_rearing_mid","periods_rearing_wall","mean_s_grooming","mean_s_rearing_mid","mean_s_rearing_wall","median_s_grooming","median_s_rearing_mid","median_s_rearing_wall"]
-        summary_frame = pd.DataFrame(matrix,columns=columns,index=tab_names)
+        summary_frame = pd.DataFrame(matrix,columns=columns,index=[x[:-4] for x in tab_names])
         summary_frame.to_csv("summary.csv")
         z.write("summary.csv")
         z.close()
