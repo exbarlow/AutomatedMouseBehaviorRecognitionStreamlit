@@ -1,4 +1,3 @@
-import csv
 import cv2
 from statistics import mean, median
 
