@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from helpers import *
+import zipfile
 
 st.title("csv_analysis")
 
@@ -16,9 +17,6 @@ def write_bytesio_to_file(filename,bytesio):
 
 uploaded_csvs = st.file_uploader("Upload CSV files",type=["csv"],accept_multiple_files=True)
 uploaded_videos = st.file_uploader("Upload Video files",type=["mp4"],accept_multiple_files=True)
-
-if len(uploaded_csvs) != len(uploaded_videos):
-    st.write("Make sure that each video has a corresponding .csv file and vice-versa")
 
 video_names = set()
 
@@ -36,12 +34,19 @@ if len(uploaded_csvs) > 0:
     does_match = True
     for csv_name in tab_names:
         corresponding_video_name = csv_name.split("_")[2][:-4] + ".mp4"
-        if corresponding_video_name not in video_names:
-            st.write("Make sure that each video has a correpsonding .csv file and vice-versa")
+        if corresponding_video_name not in video_names or len(uploaded_csvs) != len(uploaded_videos):
+            st.write("Make sure that each video has a corresponding .csv file and vice-versa")
             does_match = False
             break
     
     if does_match:
+        zip_name = "results"
+        z = zipfile.Zipfile(f"{zip_name}.zip",mode="w")
+
+        for uploaded_csv in uploaded_csvs:
+            write_bytesio_to_file(uploaded_csv.name,uploaded_csv)
+            z.write(uploaded_csv.name)
+        
         tabs = st.tabs(tab_names)
             
         for index,tab in enumerate(tabs):
@@ -59,6 +64,8 @@ if len(uploaded_csvs) > 0:
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
                 annotate_video(ob["frame_labels"],video_name,"")
 
+                z.write("out_"+video_name)
+
                 f = {'Frames':frames}
                 mean_data = {'Mean frames per action':means}
                 median_data = {'Median frames per action':medians}
@@ -74,7 +81,8 @@ if len(uploaded_csvs) > 0:
                 st.bar_chart(pd.DataFrame(data=instance_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
 
 
-            
+        with open(f"{zip_name}.zip","rb") as fp:
+            btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
     
 
             
