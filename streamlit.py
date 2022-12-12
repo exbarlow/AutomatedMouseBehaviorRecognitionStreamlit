@@ -41,7 +41,7 @@ if len(uploaded_csvs) > 0:
     
     if does_match:
         zip_name = "results"
-        z = zipfile.Zipfile(f"{zip_name}.zip",mode="w")
+        z = zipfile.ZipFile(f"{zip_name}.zip",mode="w")
 
         for uploaded_csv in uploaded_csvs:
             write_bytesio_to_file(uploaded_csv.name,uploaded_csv)
