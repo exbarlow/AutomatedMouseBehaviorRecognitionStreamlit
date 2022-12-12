@@ -1,2 +1,2 @@
 pandas
-opencv-python
+opencv-python-headless
