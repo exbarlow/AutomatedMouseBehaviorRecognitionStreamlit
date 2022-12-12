@@ -69,7 +69,7 @@ if len(uploaded_csvs) > 0:
                 num_periods = [len(x) for x in periods]
                 
                 matrix.append([tab_names[index]] + seconds + num_periods + means_sec + medians_sec)
-                video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
+                video_name = uploaded_csvs[index].name.split("_")[2] + ".mp4"
                 annotate_video(ob["frame_labels"],video_name,"")
 
                 z.write("out_"+video_name)
