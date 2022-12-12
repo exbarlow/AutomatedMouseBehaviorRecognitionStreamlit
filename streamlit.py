@@ -24,7 +24,6 @@ fps = 10
 for uploaded_video in uploaded_videos:
     write_bytesio_to_file(uploaded_video.name,uploaded_video)
     video_names.add(uploaded_video.name[:-4]+".mp4")
-    st.write(video_names)
 
 
 if len(uploaded_csvs) > 0:
@@ -36,7 +35,6 @@ if len(uploaded_csvs) > 0:
     does_match = True
     for csv_name in tab_names:
         corresponding_video_name = csv_name.split("_")[2]+".mp4"
-        st.write(corresponding_video_name)
         if corresponding_video_name not in video_names or len(uploaded_csvs) != len(uploaded_videos):
             st.write("Make sure that each video has a corresponding .csv file and vice-versa")
             does_match = False
