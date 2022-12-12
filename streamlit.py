@@ -63,9 +63,9 @@ if len(uploaded_csvs) > 0:
                 means = list(ob.values())[6:9]
                 medians = list(ob.values())[9:12]
 
-                seconds = frames/fps
-                means_sec = means/fps
-                medians_sec = medians/fps
+                seconds = [x/fps for x in frames]
+                means_sec = [x/fps for x in means]
+                medians_sec = [x/fps for x in medians]
                 
                 matrix.append(seconds + periods + means_sec + medians_sec)
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
@@ -92,7 +92,7 @@ if len(uploaded_csvs) > 0:
         summary_frame.to_csv("summary.csv")
         z.write("summary.csv")
         z.close()
-        
+
         with open(f"{zip_name}.zip","rb") as fp:
             btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
     
