@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from statistics import mean, median
 
 st.title("csv_analysis")
 
