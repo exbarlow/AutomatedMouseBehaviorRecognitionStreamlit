@@ -3,7 +3,7 @@ import pandas as pd
 from helpers import *
 import zipfile
 
-st.title("csv_analysis")
+st.title("Automated Mouse Behavior Recognition")
 
 def write_bytesio_to_file(filename,bytesio):
     """
