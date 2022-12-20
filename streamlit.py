@@ -55,6 +55,10 @@ if len(uploaded_csvs) > 0:
         for index,tab in enumerate(tabs):
             with tab:
                 df = pd.read_csv(uploaded_csvs[index])
+                st.write("index: ")
+                st.write(df.index)
+                st.write("columns: ")
+                st.write(df.columns)
 
                 ob = analyze_df(df)
 

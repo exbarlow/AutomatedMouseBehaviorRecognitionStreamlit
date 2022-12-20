@@ -51,10 +51,6 @@ def get_summary_data(period_set):
     return (mean_length,median_length)
 
 
-
-
-
-
 def analyze_df(df):
     frame_counts = {"grooming":0,"rearing_mid":0,"rearing_wall":0}
     period_dict = {"grooming":set(),"rearing_mid":set(),"rearing_wall":set()}
@@ -63,8 +59,10 @@ def analyze_df(df):
     current_period = None
 
     for index, line in df.iterrows():
-        frame = int(index)
-        assert(frame == line[0])
+        frame = line[0]
+        midbody_x = line[-2]
+        midbody_y = line[-1]
+
         current_action = get_current_action(line)
         frame_labels.append(current_action)
 
