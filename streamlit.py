@@ -66,8 +66,25 @@ if len(uploaded_csvs) > 0:
                 ## TEMP
                 video_file = open("out_"+video_name, 'rb')
                 st.video(video_file)
+                
+                st.write('Horizontal distance traveled over time')
+                st.line_chart(distances[['frame','d_x']],x='frame')
 
-                st.line_chart(distances.iloc[:,1:3])
+                st.write('Vertical distance traveled over time')
+                st.line_chart(distances[['frame','d_y']],x='frame')
+
+                st.write('Total distance traveled over time')
+                st.line_chart(distances[['frame','d_t']],x='frame')
+
+                st.write('Cumulative horizontal distance traveled over time')
+                st.line_chart(distances[['frame','cd_x']],x='frame')
+
+                st.write('Cumulative vertical distance traveled over time')
+                st.line_chart(distances[['frame','cd_y']],x='frame')
+
+                st.write('Cumulative total distance traveled over time')
+                st.line_chart(distances[['frame','cd_t']],x='frame')
+
 
         ### CREATE SUMMARY CSV HERE ###
         z.close()
