@@ -79,8 +79,8 @@ def analyze_df(df):
     df_slice = df.iloc[:,-3:-1]
     for ind, row in df_slice.iterrows():
         if ind < num_frames-1:
-            x_diff = abs(int(row[0])-int(df_slice[df_slice.columns[0]][ind+1]))
-            y_diff = abs(int(row[1])-int(df_slice[df_slice.columns[1]][ind+1]))
+            x_diff = abs(float(row[0])-float(df_slice[df_slice.columns[0]][ind+1]))
+            y_diff = abs(float(row[1])-float(df_slice[df_slice.columns[1]][ind+1]))
             t_diff = get_dist(x_diff,y_diff)
 
             d_x.append(x_diff)
@@ -98,7 +98,9 @@ def analyze_df(df):
 
     distance_frame = pd.DataFrame()
     distance_frame['d_x'] = d_x
+    distance_frame['x'] = df_slice[df_slice.columns[0]]
     distance_frame['d_y'] = d_y
+    distance_frame['y'] = df_slice[df_slice.columns[1]]
     distance_frame['d_t'] = d_t
     distance_frame['cd_x'] = cd_x
     distance_frame['cd_y'] = cd_y
