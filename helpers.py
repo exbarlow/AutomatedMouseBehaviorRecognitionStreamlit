@@ -97,7 +97,7 @@ def analyze_df(df):
                 cd_t.append(t_diff+cd_t[-1])
 
     distance_frame = pd.DataFrame()
-    distance_frame['frame'] = [x for x in range(1,num_frames)]
+    distance_frame['frames'] = [x for x in range(1,num_frames)]
     distance_frame['d_x'] = d_x
     distance_frame['d_y'] = d_y
     distance_frame['d_t'] = d_t
