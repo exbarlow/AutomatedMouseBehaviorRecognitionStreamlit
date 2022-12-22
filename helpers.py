@@ -103,7 +103,8 @@ def analyze_df(df):
     distance_frame['cd_x'] = cd_x
     distance_frame['cd_y'] = cd_y
     distance_frame['cd_t'] = cd_t
-    distance_frame['frame'] = [x for x in range(1,num_frames+1)]
+    ## TEMP ##
+    distance_frame['frame'] = [x for x in range(1,num_frames)]
 
     return (df, distance_frame)
 
