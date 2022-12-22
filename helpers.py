@@ -76,7 +76,7 @@ def analyze_df(df):
     cd_y = []
     cd_t = []
 
-    df_slice = df.iloc[:,-2:]
+    df_slice = df.iloc[:,-3:-1]
     for ind, row in df_slice.iterrows():
         if ind < num_frames-1:
             x_diff = abs(int(row[0])-int(df_slice[df_slice.columns[0]][ind+1]))
