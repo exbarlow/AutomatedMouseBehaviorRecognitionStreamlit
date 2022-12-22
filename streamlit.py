@@ -20,7 +20,7 @@ def analyze_files(labels,video_name):
     return annotate_video(labels['actions'],video_name,"")
 
 
-mode = st.tabs("Manual","Automatic")
+mode = st.tabs(["Manual","Automatic"])
 zip_name = "results"
 
 with mode[1]:
@@ -31,7 +31,7 @@ with mode[1]:
 
     with open(f"{zip_name}.zip","rb") as fp:
         btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
-        
+
 with mode[0]:
     st.title("Manual Mode")
     uploaded_csvs = st.file_uploader("Upload CSV files",type=["csv"],accept_multiple_files=True)
