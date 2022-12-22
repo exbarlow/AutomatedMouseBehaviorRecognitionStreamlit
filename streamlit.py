@@ -67,7 +67,7 @@ if len(uploaded_csvs) > 0:
                 video_file = open("out_"+video_name, 'rb')
                 st.video(video_file)
 
-                st.line_chart(distances.iloc[:,1:4])
+                st.line_chart(distances.iloc[:,1:3])
 
         ### CREATE SUMMARY CSV HERE ###
         z.close()
