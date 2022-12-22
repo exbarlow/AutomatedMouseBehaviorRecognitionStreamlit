@@ -116,6 +116,8 @@ def annotate_video(labels,video_name,path_to_video):
     print(path_to_video+video_name)
     if not cap.isOpened():
         print("Unable to read camera feed")
+
+    framespersecond= int(cap.get(cv2.CAP_PROP_FPS))
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
     out = cv2.VideoWriter("out_"+video_name,cv2.VideoWriter_fourcc(*'mp4v'),10,(frame_width,frame_height))
@@ -132,3 +134,4 @@ def annotate_video(labels,video_name,path_to_video):
     cap.release()
     out.release()
     print("finished")
+    return framespersecond

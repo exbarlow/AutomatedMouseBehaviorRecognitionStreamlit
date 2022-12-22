@@ -59,8 +59,8 @@ if len(uploaded_csvs) > 0:
                 labels,distances = analyze_df(df)
                 
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
-                annotate_video(labels["actions"],video_name,"")
-
+                fps = annotate_video(labels["actions"],video_name,"")
+                st.write("fps: ",fps)
                 z.write("out_"+video_name)
 
                 ## TEMP
