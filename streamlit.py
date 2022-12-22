@@ -52,6 +52,8 @@ if len(uploaded_csvs) > 0:
         
         tabs = st.tabs(tab_names)
 
+        time_unit = st.radio("Choose display unit",("frames","seconds"))
+
         for index,tab in enumerate(tabs):
             with tab:
                 df = pd.read_csv(uploaded_csvs[index])
@@ -60,6 +62,9 @@ if len(uploaded_csvs) > 0:
                 
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
                 fps = annotate_video(labels["actions"],video_name,"")
+
+                distances['seconds'] = distances['frames'].map(lambda x: x/fps)
+
                 st.write("fps: ",fps)
                 z.write("out_"+video_name)
 
@@ -68,22 +73,22 @@ if len(uploaded_csvs) > 0:
                 st.video(video_file)
                 
                 st.write('Horizontal distance traveled over time')
-                st.line_chart(distances[['frame','d_x']],x='frame')
+                st.line_chart(distances[['frame','seconds','d_x']],x=time_unit)
 
                 st.write('Vertical distance traveled over time')
-                st.line_chart(distances[['frame','d_y']],x='frame')
+                st.line_chart(distances[['frame','seconds','d_y']],x=time_unit)
 
                 st.write('Total distance traveled over time')
-                st.line_chart(distances[['frame','d_t']],x='frame')
+                st.line_chart(distances[['frame','seconds','d_t']],x=time_unit)
 
                 st.write('Cumulative horizontal distance traveled over time')
-                st.line_chart(distances[['frame','cd_x']],x='frame')
+                st.line_chart(distances[['frame','seconds','cd_x']],x=time_unit)
 
                 st.write('Cumulative vertical distance traveled over time')
-                st.line_chart(distances[['frame','cd_y']],x='frame')
+                st.line_chart(distances[['frame','seconds','cd_y']],x=time_unit)
 
                 st.write('Cumulative total distance traveled over time')
-                st.line_chart(distances[['frame','cd_t']],x='frame')
+                st.line_chart(distances[['frame','seconds','cd_t']],x=time_unit)
 
 
         ### CREATE SUMMARY CSV HERE ###
