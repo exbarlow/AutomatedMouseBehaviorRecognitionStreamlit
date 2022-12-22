@@ -108,7 +108,7 @@ with mode[0]:
 
 
             ### CREATE SUMMARY CSV HERE ###
-            distances.to_csv("distance_"+video_name[:-4]+.csv",index=False)
+            distances.to_csv("distance_"+video_name[:-4]+".csv",index=False)
             z.write("distance_"+video_name[:-4]+".csv")
             z.close()
 
