@@ -97,18 +97,16 @@ def analyze_df(df):
                 cd_t.append(t_diff+cd_t[-1])
 
     distance_frame = pd.DataFrame()
+    distance_frame['frame'] = [x for x in range(1,num_frames)]
     distance_frame['d_x'] = d_x
-    distance_frame['x'] = df_slice[df_slice.columns[0]]
     distance_frame['d_y'] = d_y
-    distance_frame['y'] = df_slice[df_slice.columns[1]]
     distance_frame['d_t'] = d_t
     distance_frame['cd_x'] = cd_x
     distance_frame['cd_y'] = cd_y
     distance_frame['cd_t'] = cd_t
-    ## TEMP ##
-    distance_frame['frame'] = [x for x in range(1,num_frames)]
 
-    return (df, distance_frame)
+    ## return [frames,actions] of original df, and new df containing distance data
+    return (df[[df.columns[0],df.columns[-1]]], distance_frame)
 
 
 
