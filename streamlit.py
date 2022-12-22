@@ -15,92 +15,105 @@ def write_bytesio_to_file(filename,bytesio):
     # Copy the BytesIO stream to the output file
         outfile.write(bytesio.getbuffer())
 
-uploaded_csvs = st.file_uploader("Upload CSV files",type=["csv"],accept_multiple_files=True)
-uploaded_videos = st.file_uploader("Upload Video files",type=["mp4"],accept_multiple_files=True)
-
-video_names = set()
-fps = 10
-
-for uploaded_video in uploaded_videos:
-    write_bytesio_to_file(uploaded_video.name,uploaded_video)
-    video_names.add(uploaded_video.name[:-4]+".mp4")
-
 @st.cache
 def analyze_files(labels,video_name):
     return annotate_video(labels['actions'],video_name,"")
 
 
-if len(uploaded_csvs) > 0:
-    tab_names = []
+mode = st.tabs("Manual","Automatic")
+zip_name = "results"
 
-    for ind, uploaded_csv in enumerate(uploaded_csvs):
-        tab_names.append(uploaded_csv.name[:-4])
+with mode[1]:
+    st.title("Automatic Mode")
+    uploaded_videos = st.file_uploaded("Upload Viedo files",type=["mp4"],accept_multiple_files=True)
+    with st.sidebar:
+        model = st.radio("Choose model",("resnet.LSTM","inception_resnet.LSTM","resnet.TCN","inception_resnet.TCN"))
 
-    does_match = True
-    for csv_name in tab_names:
-        corresponding_video_name = csv_name.split("_")[2]+".mp4"
-        if corresponding_video_name not in video_names or len(uploaded_csvs) != len(uploaded_videos):
-            st.write("Make sure that each video has a corresponding .csv file and vice-versa")
-            does_match = False
-            break
-    
-    if does_match:
-        zip_name = "results"
-        z = zipfile.ZipFile(f"{zip_name}.zip",mode="w")
-
-        matrix = []
-
-        for uploaded_csv in uploaded_csvs:
-            write_bytesio_to_file(uploaded_csv.name,uploaded_csv)
-            z.write(uploaded_csv.name)
+    with open(f"{zip_name}.zip","rb") as fp:
+        btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
         
-        tabs = st.tabs(tab_names)
+with mode[0]:
+    st.title("Manual Mode")
+    uploaded_csvs = st.file_uploader("Upload CSV files",type=["csv"],accept_multiple_files=True)
+    uploaded_videos = st.file_uploader("Upload Video files",type=["mp4"],accept_multiple_files=True)
+
+    video_names = set()
+
+    for uploaded_video in uploaded_videos:
+        write_bytesio_to_file(uploaded_video.name,uploaded_video)
+        video_names.add(uploaded_video.name[:-4]+".mp4")
+
+
+    if len(uploaded_csvs) > 0:
+        tab_names = []
+
+        for ind, uploaded_csv in enumerate(uploaded_csvs):
+            tab_names.append(uploaded_csv.name[:-4])
+
+        does_match = True
+        for csv_name in tab_names:
+            corresponding_video_name = csv_name.split("_")[2]+".mp4"
+            if corresponding_video_name not in video_names or len(uploaded_csvs) != len(uploaded_videos):
+                st.write("Make sure that each video has a corresponding .csv file and vice-versa")
+                does_match = False
+                break
         
-        with st.sidebar:
-            time_unit = st.radio("Choose display unit",("seconds","frames"))
+        if does_match:
+            z = zipfile.ZipFile(f"{zip_name}.zip",mode="w")
 
-        for index,tab in enumerate(tabs):
-            with tab:
-                df = pd.read_csv(uploaded_csvs[index])
+            matrix = []
 
-                labels,distances = analyze_df(df)
-                
-                video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
-                fps = analyze_files(labels,video_name)
+            for uploaded_csv in uploaded_csvs:
+                write_bytesio_to_file(uploaded_csv.name,uploaded_csv)
+                z.write(uploaded_csv.name)
+            
+            tabs = st.tabs(tab_names)
 
-                distances['seconds'] = distances['frames'].map(lambda x: x/fps)
+            with st.sidebar:
+                time_unit = st.radio("Choose display unit",("seconds","frames"))
 
-                st.write("fps: ",fps)
-                z.write("out_"+video_name)
+            for index,tab in enumerate(tabs):
+                with tab:
+                    df = pd.read_csv(uploaded_csvs[index])
 
-                ## TEMP
-                video_file = open("out_"+video_name, 'rb')
-                st.video(video_file)
-                
-                st.write('Horizontal distance traveled over time')
-                st.line_chart(distances[[time_unit,'d_x']],x=time_unit)
+                    labels,distances = analyze_df(df)
+                    
+                    video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
+                    fps = analyze_files(labels,video_name)
 
-                st.write('Vertical distance traveled over time')
-                st.line_chart(distances[[time_unit,'d_y']],x=time_unit)
+                    distances['seconds'] = distances['frames'].map(lambda x: x/fps)
 
-                st.write('Total distance traveled over time')
-                st.line_chart(distances[[time_unit,'d_t']],x=time_unit)
+                    st.write("fps: ",fps)
+                    z.write("out_"+video_name)
 
-                st.write('Cumulative horizontal distance traveled over time')
-                st.line_chart(distances[[time_unit,'cd_x']],x=time_unit)
+                    video_file = open("out_"+video_name, 'rb')
+                    st.video(video_file)
+                    
+                    st.write('Horizontal distance traveled over time')
+                    st.line_chart(distances[[time_unit,'d_x']],x=time_unit)
 
-                st.write('Cumulative vertical distance traveled over time')
-                st.line_chart(distances[[time_unit,'cd_y']],x=time_unit)
+                    st.write('Vertical distance traveled over time')
+                    st.line_chart(distances[[time_unit,'d_y']],x=time_unit)
 
-                st.write('Cumulative total distance traveled over time')
-                st.line_chart(distances[[time_unit,'cd_t']],x=time_unit)
+                    st.write('Total distance traveled over time')
+                    st.line_chart(distances[[time_unit,'d_t']],x=time_unit)
+
+                    st.write('Cumulative horizontal distance traveled over time')
+                    st.line_chart(distances[[time_unit,'cd_x']],x=time_unit)
+
+                    st.write('Cumulative vertical distance traveled over time')
+                    st.line_chart(distances[[time_unit,'cd_y']],x=time_unit)
+
+                    st.write('Cumulative total distance traveled over time')
+                    st.line_chart(distances[[time_unit,'cd_t']],x=time_unit)
 
 
-        ### CREATE SUMMARY CSV HERE ###
-        z.close()
+            ### CREATE SUMMARY CSV HERE ###
 
-        with open(f"{zip_name}.zip","rb") as fp:
-            btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
+            z.close()
+
+            with open(f"{zip_name}.zip","rb") as fp:
+                btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
     
 
             
