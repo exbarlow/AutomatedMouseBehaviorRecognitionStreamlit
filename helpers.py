@@ -81,7 +81,7 @@ def analyze_df(df):
         if ind < num_frames-1:
             print(df_slice[df_slice.columns[0]][ind+1])
             print(row[0])
-            x_diff = abs(row[0]-df_slice[df_slice.columns[0]][ind+1])
+            x_diff = abs(int(row[0])-int(df_slice[df_slice.columns[0]][ind+1]))
             y_diff = abs(row[1]-df_slice[df_slice.columns[1]][ind+1])
             t_diff = get_dist(x_diff,y_diff)
 
