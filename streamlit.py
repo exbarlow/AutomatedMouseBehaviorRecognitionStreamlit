@@ -26,8 +26,7 @@ zip_name = "results"
 with mode[1]:
     st.title("Automatic Mode")
     uploaded_videos = st.file_uploader("Upload Video files",type=["mp4"],accept_multiple_files=True)
-    with st.sidebar:
-        model = st.radio("Choose model",("resnet.LSTM","inception_resnet.LSTM","resnet.TCN","inception_resnet.TCN"))
+    model = st.radio("Choose model",("resnet.LSTM","inception_resnet.LSTM","resnet.TCN","inception_resnet.TCN"))
 
     with open(f"{zip_name}.zip","rb") as fp:
         btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
