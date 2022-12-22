@@ -56,46 +56,21 @@ if len(uploaded_csvs) > 0:
             with tab:
                 df = pd.read_csv(uploaded_csvs[index])
 
-                ob = analyze_df(df)
-
-                st.write(ob[0])
-                st.write(ob[1])
-
-        #         frames = list(ob.values())[0:3]
-        #         periods = list(ob.values())[3:6]
-        #         means = list(ob.values())[6:9]
-        #         medians = list(ob.values())[9:12]
-
-        #         seconds = [round(x/fps,3) for x in frames]
-        #         means_sec = [round(x/fps,3) for x in means]
-        #         medians_sec = [round(x/fps,3) for x in medians]
-        #         num_periods = [len(x) for x in periods]
+                labels,distances = analyze_df(df)
                 
-        #         matrix.append([tab_names[index]] + seconds + num_periods + means_sec + medians_sec)
-        #         video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
-        #         annotate_video(ob["frame_labels"],video_name,"")
+                video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
+                annotate_video(labels["actions"],video_name,"")
 
-        #         z.write("out_"+video_name)
+                z.write("out_"+video_name)
 
-        #         f = {'Frames':frames}
-        #         mean_data = {'Mean frames per action':means}
-        #         median_data = {'Median frames per action':medians}
+                ## TEMP
+                video_file = open("out_"+video_name, 'rb')
+                st.video(video_file)
 
-        #         ## TEMP
-        #         video_file = open("out_"+video_name, 'rb')
-        #         st.video(video_file)
-                
-        #         instance_data = {'Unique instances of action':[len(period) for period in periods]}
-        #         st.bar_chart(pd.DataFrame(data=f,index=['Grooming','Mid-Rearing','Wall-Rearing']))
-        #         st.bar_chart(pd.DataFrame(data=mean_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
-        #         st.bar_chart(pd.DataFrame(data=median_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
-        #         st.bar_chart(pd.DataFrame(data=instance_data,index=['Grooming','Mid-Rearing','Wall-Rearing']))
+                st.line_chart(distances.iloc[:,1:4])
 
-        # columns=["experiment","s_grooming","s_rearing_mid","s_rearing_wall","periods_grooming","periods_rearing_mid","periods_rearing_wall","mean_s_grooming","mean_s_rearing_mid","mean_s_rearing_wall","median_s_grooming","median_s_rearing_mid","median_s_rearing_wall"]
-        # summary_frame = pd.DataFrame(matrix,columns=columns)
-        # summary_frame.to_csv("summary.csv",index=False)
-        # z.write("summary.csv")
-        # z.close()
+        ### CREATE SUMMARY CSV HERE ###
+        z.close()
 
         with open(f"{zip_name}.zip","rb") as fp:
             btn = st.download_button(label="Download results",data=fp,file_name=f"{zip_name}.zip",mime="application/zip")
