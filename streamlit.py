@@ -55,8 +55,9 @@ if len(uploaded_csvs) > 0:
             z.write(uploaded_csv.name)
         
         tabs = st.tabs(tab_names)
-
-        time_unit = st.radio("Choose display unit",("seconds","frames"))
+        
+        with st.sidebar:
+            time_unit = st.radio("Choose display unit",("seconds","frames"))
 
         for index,tab in enumerate(tabs):
             with tab:
