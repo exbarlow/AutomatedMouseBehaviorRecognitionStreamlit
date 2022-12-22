@@ -1,4 +1,7 @@
 from statistics import mean, median
+import math
+import pandas as pd
+import numpy as np
 import cv2
 
 class Period:
@@ -50,93 +53,59 @@ def get_summary_data(period_set):
 
     return (mean_length,median_length)
 
+def get_dist(xdiff,ydiff):
+    return math.sqrt(xdiff**2+ydiff**2)
 
 def analyze_df(df):
-    frame_counts = {"grooming":0,"rearing_mid":0,"rearing_wall":0}
-    period_dict = {"grooming":set(),"rearing_mid":set(),"rearing_wall":set()}
-    frame_labels = []
+    label_names = df.columns[1:-2]
 
-    current_period = None
+    num_frames = df.shape[0]
 
-    for index, line in df.iterrows():
-        frame = line[0]
-        midbody_x = line[-2]
-        midbody_y = line[-1]
+    actions = ['no_action']*num_frames
 
-        current_action = get_current_action(line)
-        frame_labels.append(current_action)
+    for ind,row in df.iloc[:,1:-2].iterrows():
+        if max(row) != 0:
+            actions[ind] = df.iloc[:,1:-2].columns[np.argmax(row)]
 
+    df['actions'] = actions
 
-        if current_period is None or current_period.action != current_action:
-            ## behavior changes, need to end the old period
-            if current_period is not None:
-                current_period.set_end(frame-1)
-                period_dict[current_period.action].add(current_period)
-            ## start new action period if necessary
-            if current_action != "no_action":
-                current_period = Period(frame,current_action)
+    d_x = []
+    d_y = []
+    d_t = []
+    cd_x = []
+    cd_y = []
+    cd_t = []
+
+    df_slice = df.iloc[:,-2:]
+    for ind, row in df_slice.iterrows():
+        if ind < num_frames-1:
+            x_diff = abs(row[0]-df_slice[-2][ind+1])
+            y_diff = abs(row[1]-df_slice[-1][ind+1])
+            t_diff = get_dist(x_diff,y_diff)
+
+            d_x.append(x_diff)
+            d_y.append(y_diff)
+            d_t.append(t_diff)
+
+            if ind == 0:
+                cd_x.append(x_diff)
+                cd_y.append(y_diff)
+                cd_t.append(t_diff)
             else:
-                current_period = None
+                cd_x.append(x_diff+cd_x[-1])
+                cd_y.append(y_diff+cd_y[-1])
+                cd_t.append(t_diff+cd_t[-1])
 
-        if current_action != "no_action":
-            frame_counts[current_action] += 1
-    
-    if current_period is not None:
-        current_period.set_end(frame)
-        period_dict[current_period.action].add(current_period)
+    distance_frame = pd.DataFrame()
+    distance_frame['d_x'] = d_x
+    distance_frame['d_y'] = d_y
+    distance_frame['d_t'] = d_t
+    distance_frame['cd_x'] = cd_x
+    distance_frame['cd_y'] = cd_y
+    distance_frame['cd_t'] = cd_t
+    distance_frame['frame'] = [x for x in range(1,num_frames+1)]
 
-    mean_grooming, median_grooming = get_summary_data(period_dict["grooming"])
-    mean_rearing_mid, median_rearing_mid = get_summary_data(period_dict["rearing_mid"])
-    mean_rearing_wall, median_rearing_wall = get_summary_data(period_dict["rearing_wall"])
-
-    data = {}
-    data["f_grooming"] = frame_counts["grooming"]
-    data["f_rearing_mid"] = frame_counts["rearing_mid"]
-    data["f_rearing_wall"] = frame_counts["rearing_wall"]
-    data["p_grooming"] = sorted(list(period_dict["grooming"]))
-    data["p_rearing_mid"] = sorted(list(period_dict["rearing_mid"]))
-    data["p_rearing_wall"] = sorted(list(period_dict["rearing_wall"]))
-    data["mean_grooming"] = mean_grooming
-    data["mean_rearing_mid"] = mean_rearing_mid
-    data["mean_rearing_wall"] = mean_rearing_wall
-    data["median_grooming"] = median_grooming
-    data["median_rearing_mid"] = median_rearing_mid
-    data["median_rearing_wall"] = median_rearing_wall
-    data["frame_labels"] = frame_labels
-
-    return data
-
-
-
-def anotate_videos(results,path_to_video):
-    position = (10,50)
-    for experiment in results.items():
-        to_predict = experiment[1]["test_y"]
-        label = experiment[1]["label"]
-        predictions = experiment[1]["results"]
-        df_acc = accuracy(to_predict[label],predictions)
-        print(experiment[0],": \n", df_acc,"\n")
-        videos = experiment[1]["test"]
-        frame_int=0
-        for video in videos:
-            name_video = video.split("_")[2][:-4] + ".mp4"
-            print(name_video)
-            cap = cv2.VideoCapture(path_to_video+name_video)
-            if not cap.isOpened(): 
-                  print("Unable to read camera feed")
-            frame_width = int(cap.get(3))
-            frame_height = int(cap.get(4))
-            out = cv2.VideoWriter("out/"+experiment[0]+"_"+name_video, cv2.VideoWriter_fourcc(*'MP4V'), 20, (frame_width,frame_height))
-            returned = True
-            while returned:
-                returned, frame = cap.read()
-                if returned:
-                    label_out = label if predictions[frame_int] else "0"
-                    cv2.putText(frame, label_out,position,cv2.FONT_HERSHEY_SIMPLEX, 1, (209, 80, 0, 255),3)
-                    out.write(frame)
-                    frame_int += 1
-            cap.release()
-            out.release()
+    return (df, distance_frame)
 
 
 
