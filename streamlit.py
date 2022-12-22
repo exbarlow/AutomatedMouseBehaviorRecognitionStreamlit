@@ -25,6 +25,10 @@ for uploaded_video in uploaded_videos:
     write_bytesio_to_file(uploaded_video.name,uploaded_video)
     video_names.add(uploaded_video.name[:-4]+".mp4")
 
+@st.cache
+def analyze_files(labels,video_name):
+    return annotate_video(labels['actions'],video_name,"")
+
 
 if len(uploaded_csvs) > 0:
     tab_names = []
@@ -61,7 +65,7 @@ if len(uploaded_csvs) > 0:
                 labels,distances = analyze_df(df)
                 
                 video_name = uploaded_csvs[index].name.split("_")[2][:-4] + ".mp4"
-                fps = annotate_video(labels["actions"],video_name,"")
+                fps = analyze_files(labels,video_name)
 
                 distances['seconds'] = distances['frames'].map(lambda x: x/fps)
 
