@@ -73,22 +73,22 @@ if len(uploaded_csvs) > 0:
                 st.video(video_file)
                 
                 st.write('Horizontal distance traveled over time')
-                st.line_chart(distances[['frame','seconds','d_x']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','d_x']],x=time_unit)
 
                 st.write('Vertical distance traveled over time')
-                st.line_chart(distances[['frame','seconds','d_y']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','d_y']],x=time_unit)
 
                 st.write('Total distance traveled over time')
-                st.line_chart(distances[['frame','seconds','d_t']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','d_t']],x=time_unit)
 
                 st.write('Cumulative horizontal distance traveled over time')
-                st.line_chart(distances[['frame','seconds','cd_x']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','cd_x']],x=time_unit)
 
                 st.write('Cumulative vertical distance traveled over time')
-                st.line_chart(distances[['frame','seconds','cd_y']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','cd_y']],x=time_unit)
 
                 st.write('Cumulative total distance traveled over time')
-                st.line_chart(distances[['frame','seconds','cd_t']],x=time_unit)
+                st.line_chart(distances[['frames','seconds','cd_t']],x=time_unit)
 
 
         ### CREATE SUMMARY CSV HERE ###
