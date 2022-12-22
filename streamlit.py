@@ -25,7 +25,7 @@ zip_name = "results"
 
 with mode[1]:
     st.title("Automatic Mode")
-    uploaded_videos = st.file_uploaded("Upload Viedo files",type=["mp4"],accept_multiple_files=True)
+    uploaded_videos = st.file_uploader("Upload Viedo files",type=["mp4"],accept_multiple_files=True)
     with st.sidebar:
         model = st.radio("Choose model",("resnet.LSTM","inception_resnet.LSTM","resnet.TCN","inception_resnet.TCN"))
 
