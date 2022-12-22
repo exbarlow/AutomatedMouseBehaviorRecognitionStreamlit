@@ -108,7 +108,8 @@ with mode[0]:
 
 
             ### CREATE SUMMARY CSV HERE ###
-
+            distances.to_csv("distance_"+video_name,index=False)
+            z.write("distance_"+video_name)
             z.close()
 
             with open(f"{zip_name}.zip","rb") as fp:
